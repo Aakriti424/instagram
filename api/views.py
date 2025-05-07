@@ -1,3 +1,4 @@
+from django.db.transaction import commit
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from rest_framework import status
@@ -5,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -41,4 +42,17 @@ def loginview(request):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=200)
+
+class StoryApiView(generics.GenericAPIView):
+    queryset = Story.objects.all()
+    serializer_class = StorySerializer
+
+    def get(self, request):
+        data=self.get_object()
+        translate=self.get_serializer(data=data, many=True)
+        return Response(translate.data, status=200)
+
+    def perform_create(self,request):
+        translate=StorySerializer(data=request.data)
+
 

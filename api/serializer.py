@@ -21,5 +21,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+class StorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Story
+        fields=['story','text','tag']
+
 
 
