@@ -25,17 +25,20 @@ class RegisterApiView(generics.CreateAPIView):
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
 def loginview(request):
-    email=request.data.get('email')
-    password=request.data.get('password')
-    verify=authenticate(email=email, password=password)
-
-    if verify is None:
-        return Response({'Invalid':'Check your email or password'}, status=400)
+    if request.data.get('email')=="" or request.data.get('password')=="":
+        return Response({'Null':'Please enter all the required fields to login'}, status=400)
     else:
-        refresh=RefreshToken.for_user(verify)
-        return Response({
-            'user':str(email),
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }, status=200)
+        email=request.data.get('email')
+        password=request.data.get('password')
+        verify=authenticate(email=email, password=password)
+
+        if verify is None:
+            return Response({'Invalid':'Check your email or password'}, status=400)
+        else:
+            refresh=RefreshToken.for_user(verify)
+            return Response({
+                'user':str(email),
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            }, status=200)
 
