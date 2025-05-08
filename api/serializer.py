@@ -26,5 +26,7 @@ class StorySerializer(serializers.ModelSerializer):
         model=Story
         fields=['story','text','tag']
 
+    def create(self, validated_data):
+        return Story.objects.create(**validated_data)
 
 

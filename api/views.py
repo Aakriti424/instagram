@@ -1,6 +1,9 @@
+from glob import translate
+
 from django.db.transaction import commit
 from django.shortcuts import render
 from django.contrib.auth import authenticate
+from django.template.context_processors import request
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import generics
@@ -19,7 +22,6 @@ from .serializer import *
 
 class RegisterApiView(generics.CreateAPIView):
     queryset = User.objects.all()
-
     serializer_class = RegisterSerializer
 
 
@@ -43,16 +45,11 @@ def loginview(request):
                 'access': str(refresh.access_token)
             }, status=200)
 
-class StoryApiView(generics.GenericAPIView):
+class StoryApiView(generics.ListCreateAPIView:
     queryset = Story.objects.all()
     serializer_class = StorySerializer
 
-    def get(self, request):
-        data=self.get_object()
-        translate=self.get_serializer(data=data, many=True)
-        return Response(translate.data, status=200)
-
-    def perform_create(self,request):
-        translate=StorySerializer(data=request.data)
+    def perform_create(self,serializer):
+        serializer.save(user=self.request.user)
 
 
